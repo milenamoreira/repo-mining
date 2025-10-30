@@ -1,8 +1,11 @@
 # repo-mining
 #### (1) nomes dos membros do grupo:
  Lucas Santana do Carmo Sacramento
+ 
  Milena Corrêa Moreira
+ 
  Rafaela de Fátima Silva Alexandre
+ 
  Pedro Henrique Meireles de Almeida
  
  #### (2) explicação do sistema:
