@@ -13,6 +13,9 @@
  
  #### (3) explicação das possíveis tecnologias utilizadas:
  GitHub -> fonte dos repositórios
+ 
  pydriller -> minerar histórico de commits 
+ 
  Lizard ou PMD -> identificar duplicação de código
+ 
  argparse -> interface da linha de comando  
