@@ -3,10 +3,12 @@ Interface de linha de comando (CLI) para o RepoMiner.
 """
 
 import argparse
+from pathlib import Path
 import sys
 from datetime import datetime
 
 from repo_miner.analyzer import RepoAnalyzer
+from repo_miner.exporter import ResultExporter
 from repo_miner.reporter import ResultReporter
 
 def parse_date(date_string: str) -> datetime:
@@ -174,6 +176,24 @@ def main():
                 duplicates_limit=args.duplicates_limit,
                 commits_limit=args.commits_limit
             )
+
+        # Exporta resultados
+        if args.export:
+            output_path = Path(args.output)
+            
+            for fmt in args.export:
+                if fmt == 'json':
+                    export_path = f"{output_path}.json"
+                    ResultExporter.export_json(results, export_path)
+                elif fmt == 'csv':
+                    export_path = f"{output_path}.csv"
+                    ResultExporter.export_csv(results, export_path)
+                elif fmt in ['md', 'markdown']:
+                    export_path = f"{output_path}.md"
+                    ResultExporter.export_markdown(results, export_path)
+        
+        if not args.quiet:
+            print("\nAnálise concluída com sucesso!")
         
     except KeyboardInterrupt:
         print("\n\nAnálise interrompida pelo usuário.", file=sys.stderr)
