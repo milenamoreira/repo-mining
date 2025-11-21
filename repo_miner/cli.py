@@ -7,6 +7,7 @@ import sys
 from datetime import datetime
 
 from repo_miner.analyzer import RepoAnalyzer
+from repo_miner.reporter import ResultReporter
 
 def parse_date(date_string: str) -> datetime:
     """Converte string de data para objeto datetime."""
@@ -165,6 +166,14 @@ def main():
             to=args.to,
             analyze_duplicates=not args.no_duplicates
         )
+
+        # Exibe resultados
+        if not args.no_print:
+            ResultReporter.print_full_report(
+                results,
+                duplicates_limit=args.duplicates_limit,
+                commits_limit=args.commits_limit
+            )
         
     except KeyboardInterrupt:
         print("\n\nAnálise interrompida pelo usuário.", file=sys.stderr)
