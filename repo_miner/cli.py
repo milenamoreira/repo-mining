@@ -6,6 +6,9 @@ import argparse
 import sys
 from datetime import datetime
 
+from repo_miner.analyzer import RepoAnalyzer
+from repo_miner.reporter import ResultReporter
+
 def parse_date(date_string: str) -> datetime:
     """Converte string de data para objeto datetime."""
     try:
@@ -145,6 +148,46 @@ def main():
     args = argument_parser()
 
     validate_args(args)
+    analyzer = None
+    try:
+        if not args.quiet:
+            print(f"Iniciando análise do repositório: {args.repository}")
+            print(f"Threshold de similaridade: {args.threshold}%")
+            print(f"Tamanho mínimo de bloco: {args.min_length} linhas")
+        
+        analyzer = RepoAnalyzer(
+            repo_url=args.repository,
+            threshold=args.threshold,
+            min_length=args.min_length
+        )
+        
+        results = analyzer.analyze_commits(
+            since=args.since,
+            to=args.to,
+            analyze_duplicates=not args.no_duplicates
+        )
+
+        # Exibe resultados
+        if not args.no_print:
+            ResultReporter.print_full_report(
+                results,
+                duplicates_limit=args.duplicates_limit,
+                commits_limit=args.commits_limit
+            )
+        
+    except KeyboardInterrupt:
+        print("\n\nAnálise interrompida pelo usuário.", file=sys.stderr)
+        sys.exit(1)
+    except Exception as e:
+        print(f"\nErro durante a análise: {str(e)}", file=sys.stderr)
+        import traceback
+        if not args.quiet:
+            traceback.print_exc()
+        sys.exit(1)
+    finally:
+        if analyzer:
+            analyzer.cleanup()
+
 
 if __name__ == '__main__':
     main()

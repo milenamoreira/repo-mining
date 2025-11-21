@@ -48,6 +48,7 @@ def sample_commit_data():
         'deletions': 0,
         'lines': 8
     }
+
 @pytest.fixture
 def sample_python_code():
     """Código Python de exemplo para testes."""
@@ -80,3 +81,37 @@ def sample_commits_list(sample_commit_data):
     commits.append(commit2)
     
     return commits
+
+@pytest.fixture
+def sample_analysis_results(sample_commits_list):
+    """Resultados de análise de exemplo."""
+    return {
+        'repo_url': 'https://github.com/test/repo.git',
+        'total_commits': 2,
+        'commits': sample_commits_list,
+        'statistics': {
+            'total_commits': 2,
+            'total_files_modified': 2,
+            'total_insertions': 20,
+            'total_deletions': 0,
+            'total_lines': 16,
+            'net_change': 20,
+            'average_files_per_commit': 1.0,
+            'authors': {
+                'Test Author': {'commits': 1, 'insertions': 10, 'deletions': 0},
+                'Another Author': {'commits': 1, 'insertions': 10, 'deletions': 0}
+            },
+            'file_types': {'.py': 2}
+        },
+        'duplicates': {
+            'total_files_analyzed': 2,
+            'duplicate_functions': [],
+            'similar_blocks': [],
+            'duplicate_files': [],
+            'summary': {
+                'total_duplicate_functions': 0,
+                'total_similar_blocks': 0,
+                'total_duplicate_files': 0
+            }
+        }
+    }
