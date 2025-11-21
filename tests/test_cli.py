@@ -193,3 +193,58 @@ class TestCLIMain:
         
         # Em modo quiet, menos prints devem ser feitos
         assert isinstance(mock_print.call_count, int)
+
+    @pytest.mark.unit
+    @patch('repo_miner.cli.RepoAnalyzer')
+    @patch('repo_miner.cli.ResultReporter')
+    @patch('repo_miner.cli.ResultExporter')
+    @patch('sys.argv', ['cli.py', 'test/repo'])
+    def test_main_basic_usage(self, mock_exporter, mock_reporter, mock_analyzer_class):
+        """Testa uso básico da CLI."""
+        mock_analyzer = MagicMock()
+        mock_analyzer.repo_url = 'https://github.com/test/repo.git'
+        mock_analyzer.analyze_commits.return_value = {
+            'repo_url': 'test/repo',
+            'total_commits': 0,
+            'commits': [],
+            'statistics': {},
+            'duplicates': None
+        }
+        mock_analyzer_class.return_value = mock_analyzer
+        
+        with patch('builtins.print'):
+            try:
+                main()
+            except SystemExit:
+                pass
+        
+        mock_analyzer_class.assert_called_once()
+        mock_analyzer.analyze_commits.assert_called_once()
+
+    @pytest.mark.unit
+    @patch('repo_miner.cli.RepoAnalyzer')
+    @patch('repo_miner.cli.ResultExporter')
+    @patch('sys.argv', ['cli.py', 'test/repo', '--export', 'json', '--output', 'results'])
+    def test_main_with_export(self, mock_exporter_class, mock_analyzer_class):
+        """Testa CLI com exportação."""
+        mock_analyzer = MagicMock()
+        mock_analyzer.analyze_commits.return_value = {
+            'repo_url': 'test/repo',
+            'total_commits': 0,
+            'commits': [],
+            'statistics': {},
+            'duplicates': None
+        }
+        mock_analyzer_class.return_value = mock_analyzer
+        
+        mock_exporter = MagicMock()
+        mock_exporter_class.export_json = MagicMock()
+        
+        with patch('builtins.print'):
+            try:
+                main()
+            except SystemExit:
+                pass
+        
+        # Verifica que export_json foi chamado
+        mock_exporter_class.export_json.assert_called_once()
